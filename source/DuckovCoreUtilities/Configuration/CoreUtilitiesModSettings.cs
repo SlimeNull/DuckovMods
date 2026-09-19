@@ -154,6 +154,9 @@ namespace SlimeNull.DuckovCoreUtilities.Configuration
             [InspectorName("@SettingsText/MinimumOpacity")]
             [Range(0f, 1f)]
             public float BreathingMinAlpha = 0.35f;
+
+            [InspectorName("@SettingsText/HideLootedLootboxes")]
+            public bool HideLootedLootboxes = false;
         }
 
         [Serializable]
@@ -174,6 +177,9 @@ namespace SlimeNull.DuckovCoreUtilities.Configuration
 
             [InspectorName("@SettingsText/CloseWhenHurt")]
             public bool WhenHurt = true;
+
+            [InspectorName("@SettingsText/DoNotCloseWhenInventoryHasMultiplePages")]
+            public bool DoNotCloseWhenInventoryHasMultiplePages = true;
         }
 
         [Serializable]
@@ -631,12 +637,14 @@ namespace SlimeNull.DuckovCoreUtilities.Configuration
             _lootOutlineFeature.GroundItemBreathingEffect = lootAndInventory.LootOutline.GroundItemBreathing;
             _lootOutlineFeature.BreathingPeriod = lootAndInventory.LootOutline.BreathingPeriod;
             _lootOutlineFeature.BreathingMinAlpha = lootAndInventory.LootOutline.BreathingMinAlpha;
+            _lootOutlineFeature.HideLootedLootboxes = lootAndInventory.LootOutline.HideLootedLootboxes;
             _host.SetEnabled(_lootOutlineFeature, lootAndInventory.LootOutline.Enabled);
 
             _host.SetEnabled(_inventorySortFeature!, lootAndInventory.InventorySort.Enabled);
 
             _autoCloseFeature!.WhenMove = lootAndInventory.AutoCloseBackpack.WhenMove;
             _autoCloseFeature.WhenHurt = lootAndInventory.AutoCloseBackpack.WhenHurt;
+            _autoCloseFeature.DoNotCloseWhenInventoryHasMultiplePages = lootAndInventory.AutoCloseBackpack.DoNotCloseWhenInventoryHasMultiplePages;
             _host.SetEnabled(_autoCloseFeature, lootAndInventory.AutoCloseBackpack.Enabled);
 
             _fadeHudFeature!.TargetAlpha = combatAndHud.FadeHud.TargetAlpha;

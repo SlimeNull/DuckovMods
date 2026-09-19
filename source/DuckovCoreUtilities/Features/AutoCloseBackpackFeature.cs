@@ -1,5 +1,7 @@
 ﻿using Duckov.UI;
+using Duckov.UI.Inventories;
 using SlimeNull.DuckovCoreUtilities.Infrastructure;
+using SlimeNull.DuckovCoreUtilities.Utilities;
 using UnityEngine.InputSystem;
 
 namespace SlimeNull.DuckovCoreUtilities.Features
@@ -12,6 +14,8 @@ namespace SlimeNull.DuckovCoreUtilities.Features
 
         public bool WhenMove { get; set; } = true;
         public bool WhenHurt { get; set; } = true;
+
+        public bool DoNotCloseWhenInventoryHasMultiplePages { get; set; } = true;
 
         protected override void OnEnable()
         {
@@ -35,9 +39,9 @@ namespace SlimeNull.DuckovCoreUtilities.Features
         {
             if (WhenMove &&
                 View.ActiveView != null &&
-                IsMoveKeyPressedThisFrame())
+                ShouldCloseViewThisFrame())
             {
-                CloseLootView();
+                CloseCurrentView();
             }
         }
 
@@ -72,7 +76,7 @@ namespace SlimeNull.DuckovCoreUtilities.Features
             if (WhenHurt &&
                 IsEnemyAttack(arg0))
             {
-                CloseLootView();
+                CloseCurrentView();
             }
         }
 
@@ -90,12 +94,7 @@ namespace SlimeNull.DuckovCoreUtilities.Features
                 attacker.Team != _attachedCharacter.Team;
         }
 
-        private static void CloseLootView()
-        {
-            View.ActiveView?.Close();
-        }
-
-        private static bool IsMoveKeyPressedThisFrame()
+        private bool ShouldCloseViewThisFrame()
         {
             var keyboard = Keyboard.current;
             if (keyboard is null)
@@ -103,10 +102,30 @@ namespace SlimeNull.DuckovCoreUtilities.Features
                 return false;
             }
 
-            return keyboard.wKey.wasPressedThisFrame ||
+            if (DoNotCloseWhenInventoryHasMultiplePages)
+            {
+                if (keyboard.wKey.wasPressedThisFrame ||
+                    keyboard.sKey.wasPressedThisFrame)
+                {
+                    if (View.ActiveView is LootView lootView &&
+                        lootView.GetLootTargetInventoryDisplay() is InventoryDisplay inventoryDisplay &&
+                        inventoryDisplay.MaxPage > 1)
+                    {
+                        return false;
+                    }
+
+                    return true;
+                }
+            }
+
+            return
                 keyboard.aKey.wasPressedThisFrame ||
-                keyboard.sKey.wasPressedThisFrame ||
                 keyboard.dKey.wasPressedThisFrame;
+        }
+
+        private static void CloseCurrentView()
+        {
+            View.ActiveView?.Close();
         }
     }
 }

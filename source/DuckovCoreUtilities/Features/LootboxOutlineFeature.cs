@@ -32,6 +32,8 @@ namespace SlimeNull.DuckovCoreUtilities.Features
         public bool GroundItemBreathingEffect { get; set; } = true;
         public float BreathingPeriod { get; set; } = 1.5f;
         public float BreathingMinAlpha { get; set; } = 0.35f;
+        public bool HideLootedLootboxes { get; set; } = false;
+
         private float CurrentBreathingAlpha { get; set; } = 1f;
 
         protected override void OnEnable()
@@ -209,11 +211,17 @@ namespace SlimeNull.DuckovCoreUtilities.Features
             }
         }
 
-        private static bool IsVisibleToPlayer(Vector3 position)
+        private static bool IsVisibleToPlayer(Vector3 position, bool isLooted)
         {
             var feature = ActiveFeature;
             var revealer = feature?._playerRevealer;
             if (feature is null || revealer == null)
+            {
+                return false;
+            }
+
+            if (feature.HideLootedLootboxes && 
+                isLooted)
             {
                 return false;
             }
@@ -350,7 +358,7 @@ namespace SlimeNull.DuckovCoreUtilities.Features
                     return;
                 }
 
-                SetOutlineVisible(IsVisibleToPlayer(transform.position));
+                SetOutlineVisible(IsVisibleToPlayer(transform.position, false));
 
                 if (!_outlineVisible)
                 {
@@ -498,7 +506,7 @@ namespace SlimeNull.DuckovCoreUtilities.Features
                     return;
                 }
 
-                var visible = IsVisibleToPlayer(transform.position);
+                var visible = IsVisibleToPlayer(transform.position, lootBox?.Looted ?? false);
                 if (_outlineVisible != visible)
                 {
                     _outlineVisible = visible;
