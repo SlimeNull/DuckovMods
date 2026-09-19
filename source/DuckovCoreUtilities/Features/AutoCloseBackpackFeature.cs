@@ -1,4 +1,5 @@
-﻿using Duckov.UI;
+﻿using Duckov.Buildings.UI;
+using Duckov.UI;
 using Duckov.UI.Inventories;
 using SlimeNull.DuckovCoreUtilities.Infrastructure;
 using SlimeNull.DuckovCoreUtilities.Utilities;
@@ -98,6 +99,11 @@ namespace SlimeNull.DuckovCoreUtilities.Features
         {
             var keyboard = Keyboard.current;
             if (keyboard is null)
+            {
+                return false;
+            }
+
+            if (View.ActiveView is BuilderView builderView)
             {
                 return false;
             }
